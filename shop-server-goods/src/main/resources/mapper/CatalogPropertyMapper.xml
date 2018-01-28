@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.CatalogPropertyMapper">
+    <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+    <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.CatalogProperty">
+        <id column="id" property="id"/>
+        <result column="catalog_id" property="catalogId"/>
+        <result column="name" property="name"/>
+        <result column="sequence" property="sequence"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `catalog_property`
+    where id = #{id}
+  </delete>
+    <insert id="insert" parameterType="cn.wolfcode.shop.domain.CatalogProperty" useGeneratedKeys="true" keyProperty="id">
+    insert into `catalog_property` (catalog_id, name, sequence, type)
+    values (#{catalogId}, #{name}, #{sequence}, #{type})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.CatalogProperty">
+    update `catalog_property`
+    set catalog_id = #{catalogId},
+      name = #{name},
+      sequence = #{sequence},
+      type = #{type}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, catalog_id, name, sequence, type
+    from `catalog_property`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, catalog_id, name, sequence, type
+    from `catalog_property`
+  </select>
+    <select id="selectCatalogPropertyByCatalogId" resultMap="BaseResultMap">
+      select id, catalog_id, name, sequence, type
+    from catalog_property where catalog_id=#{catalogId}
+    </select>
+</mapper>

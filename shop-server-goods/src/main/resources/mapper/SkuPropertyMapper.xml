@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.SkuPropertyMapper">
+    <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+    <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.SkuProperty">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="catalog_id" property="catalogId"/>
+        <result column="type" property="type"/>
+        <result column="sequence" property="sequence"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `sku_property`
+    where id = #{id}
+  </delete>
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+    insert into `sku_property` (name, catalog_id, type, sequence)
+    values (#{name}, #{catalogId}, #{type}, #{sequence})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.SkuProperty">
+    update `sku_property`
+    set name = #{name},
+      catalog_id = #{catalogId},
+      type = #{type},
+      sequence = #{sequence}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, name, catalog_id, type, sequence
+    from `sku_property`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, catalog_id, type, sequence
+    from `sku_property`
+  </select>
+    <select id="getSkuPropertyByCatalogId" resultMap="BaseResultMap">
+        select id, name, catalog_id, type, sequence
+    from `sku_property`
+    where catalog_id = #{catalogId}
+    </select>
+</mapper>

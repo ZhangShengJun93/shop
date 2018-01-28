@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.ProductImageMapper" >
+  <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.ProductImage" >
+    <id column="id" property="id" />
+    <result column="product_id" property="productId" />
+    <result column="image_path" property="imagePath" />
+    <result column="sequence" property="sequence" />
+    <result column="mods" property="mods" />
+    <result column="cover" property="cover" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `product_image`
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.shop.domain.ProductImage" useGeneratedKeys="true" keyProperty="id" >
+    insert into `product_image` (product_id, image_path, sequence, mods, cover)
+    values (#{productId}, #{imagePath}, #{sequence}, #{mods}, #{cover})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.ProductImage" >
+    update `product_image`
+    set
+      image_path = #{imagePath},
+      sequence = #{sequence},
+      mods = #{mods},
+      cover = #{cover}
+    where id = #{id} and product_id = #{productId}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, product_id, image_path, sequence, mods, cover
+    from `product_image`
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, product_id, image_path, sequence, mods, cover
+    from `product_image`
+  </select>
+    <select id="selectByProductId" resultMap="BaseResultMap">
+      SELECT id, product_id, image_path, sequence, mods, cover
+      FROM product_image WHERE product_id = #{productId}
+    </select>
+</mapper>

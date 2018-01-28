@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.CatalogMapper">
+    <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+    <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.Catalog">
+        <id column="id" property="id"/>
+        <result column="create_date" property="createDate"/>
+        <result column="last_modified_date" property="lastModifiedDate"/>
+        <result column="version" property="version"/>
+        <result column="level" property="level"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="sequence" property="sequence"/>
+        <result column="children_catalogs" property="childrenCatalogs"/>
+        <result column="products" property="products"/>
+        <result column="parent_catalog_id" property="parentCatalogId"/>
+        <result column="is_parent" property="isParent"/>
+    </resultMap>
+    <resultMap id="simpleResultMap" type="cn.wolfcode.shop.domain.Catalog">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from `catalog`
+    where id = #{id}
+  </delete>
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    insert into `catalog` (create_date, last_modified_date, version, `level`, `name`, code, 
+      sequence, children_catalogs, products, parent_catalog_id, is_parent)
+    values (#{createDate}, #{lastModifiedDate}, #{version}, #{level}, #{name}, #{code}, 
+      #{sequence}, #{childrenCatalogs}, #{products}, #{parentCatalogId}, #{isParent})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.Catalog">
+    update `catalog`
+    set create_date = #{createDate},
+      last_modified_date = #{lastModifiedDate},
+      version = version+1,
+      level = #{level},
+      name = #{name},
+      code = #{code},
+      sequence = #{sequence},
+      children_catalogs = #{childrenCatalogs},
+      products = #{products},
+      parent_catalog_id = #{parentCatalogId},
+      is_parent = #{isParent}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select id, create_date, last_modified_date, version, `level`, `name`, code, sequence, 
+    children_catalogs, products, parent_catalog_id, is_parent
+    from `catalog`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, create_date, last_modified_date, version, `level`, `name`, code, sequence, 
+    children_catalogs, products, parent_catalog_id, is_parent
+    from `catalog`
+  </select>
+    <select id="getCatalogByParentId" resultMap="BaseResultMap">
+    select id, create_date, last_modified_date, version, `level`, `name`, code, sequence, 
+    children_catalogs, products, parent_catalog_id, is_parent
+    from `catalog`
+    where  id= #{parentCatalogId}
+  </select>
+
+    <select id="getChildenCatalogById" resultMap="BaseResultMap">
+        select id, create_date, last_modified_date, version, `level`, `name`, code, sequence,
+        children_catalogs, products, parent_catalog_id, is_parent
+        from `catalog`
+        <choose>
+            <when test="id!=null">
+                <where>
+                    parent_catalog_id = #{id}
+                </where>
+            </when>
+            <otherwise>
+                <where>
+                    parent_catalog_id is null
+                </where>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectCatalogByBrabdId" resultMap="BaseResultMap">
+    select id,name
+		from catalog
+		where id in(select catalog_id from brand_catalog where
+		brand_id=#{brandId})
+  </select>
+    <select id="getChildenCatalogByIds" resultMap="BaseResultMap">
+        select id, create_date, last_modified_date, version, `level`, `name`, code, sequence,
+        children_catalogs, products, parent_catalog_id, is_parent
+        from `catalog`
+        <choose>
+            <when test="id!=null">
+                <where>
+                    parent_catalog_id = #{id}
+                </where>
+            </when>
+            <otherwise>
+                <where>
+                    parent_catalog_id is null
+                </where>
+            </otherwise>
+        </choose>
+    </select>
+    <select id="selectInfParentByparentCatalogId" resultMap="BaseResultMap">
+         select id, create_date, last_modified_date, version, `level`, `name`, code, sequence,
+        children_catalogs, products, parent_catalog_id, is_parent
+        from catalog where id=#{parentCatalogId}
+    </select>
+</mapper>

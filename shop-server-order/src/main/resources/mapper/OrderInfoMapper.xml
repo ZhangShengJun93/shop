@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.OrderInfoMapper">
+    <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+    <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.OrderInfo">
+        <id column="id" property="id"/>
+        <result column="order_sn" property="orderSn"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="shipping_status" property="shippingStatus"/>
+        <result column="pay_status" property="payStatus"/>
+        <result column="consignee" property="consignee"/>
+        <result column="country" property="country"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="confirmTime" property="confirmTime"/>
+        <result column="district" property="district"/>
+        <result column="address" property="address"/>
+        <result column="zipcode" property="zipcode"/>
+        <result column="mobile" property="mobile"/>
+        <result column="order_amount" property="orderAmount"/>
+        <association property="user" javaType="cn.wolfcode.shop.domain.User"
+                     columnPrefix="u_">
+            <id column="id" property="id" />
+            <result column="nick_name" property="nickName" />
+            <result column="account" property="account" />
+            <result column="password" property="password" />
+            <result column="phone" property="phone" />
+            <result column="email" property="email" />
+            <result column="sex" property="sex" />
+            <result column="birthday" property="birthday" />
+            <result column="user_money" property="userMoney" />
+            <result column="grade" property="grade" />
+            <result column="experience" property="experience" />
+            <result column="integral" property="integral" />
+            <result column="username" property="username" />
+        </association>
+        <association property="orderProductPrice" javaType="cn.wolfcode.shop.domain.OrderProductPrice"
+                     columnPrefix="opp_">
+            <id column="id" property="id" />
+            <result column="total_amout" property="totalAmout" />
+            <result column="discount" property="discount" />
+            <result column="delivery" property="delivery" />
+            <result column="protect" property="protect" />
+            <result column="product_price" property="productPrice" />
+            <result column="invoice" property="invoice" />
+            <result column="card_price" property="cardPrice" />
+            <result column="paid_price" property="paidPrice" />
+        </association>
+        <collection property="orderActions" column="id" ofType="cn.wolfcode.shop.domain.OrderAction"
+                    select="cn.wolfcode.shop.mapper.OrderActionMapper.queryById"></collection>
+    </resultMap>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.OrderInfo">
+    update order_info
+    set order_sn = #{orderSn},
+      user_id = #{user.id},
+      order_status = #{orderStatus},
+      shipping_status = #{shippingStatus},
+      confirmTime = #{confirmTime},
+      pay_status = #{payStatus},
+      consignee = #{consignee},
+      country = #{country},
+      province = #{province},
+      city = #{city},
+      district = #{district},
+      address = #{address},
+      zipcode = #{zipcode},
+      mobile = #{mobile},
+      order_amount = #{orderAmount},
+      orderProductPrice_id = #{orderProductPrice.id}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select oi.id,oi.order_sn,oi.user_id,oi.consignee,oi.pay_status,oi.order_status,oi.shipping_status,
+        oi.confirmTime,oi.address,oi.mobile,oi.zipcode,oi.country,oi.province,oi.city,
+        oi.district,oi.order_amount,oi.orderProductPrice_id,
+        u.id u_id ,u.nick_name u_nick_name ,u.account u_account,
+        u.password u_password,u.phone u_phone ,u.email u_email,
+        u.sex u_sex,u.birthday u_birthday,u.grade u_grade,
+        u.experience u_experience,u.integral u_integral ,
+        u.username u_username,
+        opp.id opp_id ,opp.total_amout opp_total_amout,
+        opp.discount opp_discount,opp.delivery opp_delivery,
+        opp.protect opp_protect,opp.product_price opp_product_price,
+        opp.invoice opp_invoice,opp.card_price opp_card_price,
+        opp.paid_price opp_paid_price
+        from order_info oi
+        JOIN user u ON u.id=oi.user_id
+        join order_product_price opp on oi.orderProductPrice_id = opp.id
+    where oi.id = #{id}
+  </select>
+    <select id="queryForCount" resultType="int">
+        select count(id) from order_info oi
+        <include refid="base_where"/>
+    </select>
+    <select id="queryForList" resultMap="BaseResultMap">
+        select oi.id,oi.order_sn,oi.user_id,oi.consignee,oi.pay_status,oi.order_status,oi.shipping_status,
+        oi.confirmTime,oi.address,oi.mobile,oi.zipcode,oi.country,oi.province,oi.city,
+        oi.district,oi.order_amount,
+        u.id u_id ,u.nick_name u_nick_name ,u.account u_account,
+        u.password u_password,u.phone u_phone ,u.email u_email,
+        u.sex u_sex,u.birthday u_birthday,u.grade u_grade,
+        u.experience u_experience,u.integral u_integral ,
+        u.username u_username,
+        opp.id opp_id ,opp.total_amout opp_total_amout,
+        opp.discount opp_discount,opp.delivery opp_delivery,
+        opp.protect opp_protect,opp.product_price opp_product_price,
+        opp.invoice opp_invoice,opp.card_price opp_card_price,
+        opp.paid_price opp_paid_price
+        from order_info oi
+        JOIN user u ON u.id=oi.user_id
+        join order_product_price opp on oi.orderProductPrice_id = opp.id
+        <include refid="base_where"/>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <sql id="base_where">
+        <where>
+            <if test="state!= -1">
+                and oi.order_status = #{state}
+            </if>
+            <if test="beginDate != null">
+                and oi.confirmTime > #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and oi.confirmTime &lt; #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllSend" resultMap="BaseResultMap">
+        select oi.id,oi.order_sn,oi.user_id,oi.consignee,oi.pay_status,oi.order_status,oi.shipping_status,
+        oi.confirmTime,oi.address,oi.mobile,oi.zipcode,oi.country,oi.province,oi.city,
+        oi.district,oi.order_amount,oi.orderProductPrice_id,
+        u.id u_id ,u.nick_name u_nick_name ,u.account u_account,
+        u.password u_password,u.phone u_phone ,u.email u_email,
+        u.sex u_sex,u.birthday u_birthday,u.grade u_grade,
+        u.experience u_experience,u.integral u_integral ,
+        u.username u_username,
+        opp.id opp_id ,opp.total_amout opp_total_amout,
+        opp.discount opp_discount,opp.delivery opp_delivery,
+        opp.protect opp_protect,opp.product_price opp_product_price,
+        opp.invoice opp_invoice,opp.card_price opp_card_price,
+        opp.paid_price opp_paid_price
+        from order_info oi
+        JOIN user u ON u.id=oi.user_id
+        join order_product_price opp on oi.orderProductPrice_id = opp.id
+         where oi.shipping_status =1
+    </select>
+</mapper>
+
+

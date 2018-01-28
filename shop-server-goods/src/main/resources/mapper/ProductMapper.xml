@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.ProductMapper" >
+  <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.Product" >
+    <id column="id" property="id" />
+    <result column="created_date" property="createdDate" />
+    <result column="last_modified_date" property="lastModifiedDate" />
+    <result column="version" property="version" />
+    <result column="name" property="name" />
+    <result column="keyword" property="keyword" />
+    <result column="code" property="code" />
+    <result column="image" property="image" />
+    <result column="market_price" property="marketPrice" />
+    <result column="base_price" property="basePrice" />
+    <result column="mods" property="mods" />
+    <result column="impressions" property="impressions" />
+    <association property="brand" columnPrefix="b_" resultMap="cn.wolfcode.shop.mapper.BrandMapper.simpleResultMap"/>
+    <association property="catalog" columnPrefix="cl_" resultMap="cn.wolfcode.shop.mapper.CatalogMapper.simpleResultMap"/>
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `product`
+    where id = #{id}
+  </delete>
+  <insert id="insert"  useGeneratedKeys="true" keyProperty="id" >
+    insert into `product` (created_date, last_modified_date, version, catalog_id, brand_id,
+      name, keyword, code, image, market_price, base_price, mods,
+      impressions)
+    values (#{createdDate}, #{lastModifiedDate}, #{version}, #{catalog.id}, #{brand.id},
+      #{name}, #{keyword}, #{code}, #{image}, #{marketPrice}, #{basePrice}, #{mods},
+      #{impressions})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.Product" >
+    update `product`
+    set created_date = #{createdDate},
+      last_modified_date = #{lastModifiedDate},
+      version = version + 1,
+      catalog_id = #{catalog.id},
+      brand_id = #{brand.id},
+      name = #{name},
+      keyword = #{keyword},
+      code = #{code},
+      image = #{image},
+      market_price = #{marketPrice},
+      base_price = #{basePrice},
+      mods = #{mods},
+      impressions = #{impressions}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select p.id, p.created_date, p.last_modified_date, p.version, p.catalog_id, p.brand_id, p.name,
+    p.keyword, p.code, p.image, p.market_price, p.base_price, p.mods, p.impressions, cl.id cl_id,cl.name cl_name,
+    b.id b_id ,b.chinese_name b_chinese_name
+    FROM product p
+    JOIN catalog cl ON p.catalog_id = cl.id
+    JOIN brand  b ON p.brand_id = b.id
+    where p.id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, created_date, last_modified_date, version, catalog_id, brand_id, name,
+    keyword, code, image, market_price, base_price, mods, impressions
+    from `product`
+  </select>
+  <sql id="base_where">
+    <where>
+      <if test="catalogIdsFirst != -1">
+        <foreach collection="catalogIds" item="catalogId" separator="or" open="(" close=")">
+          p.catalog_id = #{catalogId}
+        </foreach>
+      </if>
+
+      <if test="keyword !=null and keyword != ''">
+        and p.name like concat('%',#{keyword},'%')
+      </if>
+    </where>
+  </sql>
+  <select id="queryForCount" resultType="java.lang.Integer">
+    SELECT COUNT(p.id)
+    FROM product p
+    <include refid="base_where"/>
+  </select>
+  <select id="queryForList" resultMap="BaseResultMap">
+    SELECT p.id, p.created_date, p.last_modified_date, p.version, p.catalog_id, p.brand_id, p.name,
+    p.keyword, p.code, p.image, p.market_price, p.base_price, p.mods, p.impressions, cl.id cl_id,cl.name cl_name,
+    b.id b_id ,b.chinese_name b_chinese_name
+    FROM product p
+    JOIN catalog cl ON p.catalog_id = cl.id
+    JOIN brand  b ON p.brand_id = b.id
+    <include refid="base_where"/>
+    limit #{startIndex},#{pageSize}
+  </select>
+</mapper>

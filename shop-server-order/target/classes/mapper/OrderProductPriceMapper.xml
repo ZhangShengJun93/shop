@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.shop.mapper.OrderProductPriceMapper">
+  <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.OrderProductPrice">
+    <id column="id" property="id" />
+    <result column="total_amout" property="totalAmout" />
+    <result column="discount" property="discount" />
+    <result column="delivery" property="delivery" />
+    <result column="protect" property="protect" />
+    <result column="invoice" property="invoice" />
+    <result column="card_price" property="cardPrice" />
+    <result column="paid_price" property="paidPrice" />
+    <result column="product_price" property="productPrice" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from order_product_price
+    where id = #{id}
+  </delete>
+  <insert id="insert" keyProperty="id" parameterType="cn.wolfcode.shop.domain.OrderProductPrice" useGeneratedKeys="true">
+    insert into order_product_price (total_amout, discount, delivery, protect, invoice, card_price, 
+      paid_price, product_price)
+    values (#{totalAmout}, #{discount}, #{delivery}, #{protect}, #{invoice}, #{cardPrice}, 
+      #{paidPrice}, #{productPrice})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.OrderProductPrice">
+    update order_product_price
+    set total_amout = #{totalAmout},
+      discount = #{discount},
+      delivery = #{delivery},
+      protect = #{protect},
+      invoice = #{invoice},
+      card_price = #{cardPrice},
+      paid_price = #{paidPrice},
+      product_price = #{productPrice}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, total_amout, discount, delivery, protect, invoice, card_price, paid_price, 
+    product_price
+    from order_product_price
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, total_amout, discount, delivery, protect, invoice, card_price, paid_price, 
+    product_price
+    from order_product_price
+  </select>
+</mapper>

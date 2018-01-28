@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.ProductCatalogPropertyValueMapper" >
+  <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.ProductCatalogPropertyValue" >
+    <id column="id" property="id" />
+    <result column="product_id" property="productId" />
+    <result column="name" property="name" />
+    <result column="value" property="value" />
+  </resultMap>
+  <resultMap id="simpleResultMap" type="cn.wolfcode.shop.domain.ProductCatalogPropertyValue">
+    <id column="cpv_id" property="id"/>
+    <result column="cp_name" property="name" />
+    <result column="cpv_value" property="value" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from `product_catalog_property_value`
+    where id = #{id}
+  </delete>
+  <insert id="insert" parameterType="cn.wolfcode.shop.domain.ProductCatalogPropertyValue" useGeneratedKeys="true" keyProperty="id" >
+    insert into `product_catalog_property_value` (product_id, name, value)
+    values (#{productId}, #{name}, #{value})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.ProductCatalogPropertyValue" >
+    update `product_catalog_property_value`
+    set
+      name = #{name},
+      value = #{value}
+    where product_id = #{productId} and id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, product_id, name, value
+    from `product_catalog_property_value`
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, product_id, name, value
+    from `product_catalog_property_value`
+  </select>
+    <select id="getAllPropertiesByProductId" resultMap="BaseResultMap">
+      SELECT id, product_id, name, value
+      FROM product_catalog_property_value WHERE product_id = #{productId}
+    </select>
+    <select id="getCommonPropertiesByCatalogId" resultMap="simpleResultMap">
+      SELECT cpv.id cpv_id,cp.name cp_name,cpv.value cpv_value
+      FROM catalog c
+      JOIN catalog_property cp ON c.id = cp.catalog_id
+      JOIN catalog_property_value cpv ON cp.id = cpv.catalog_property_id
+      WHERE c.id = #{catalogId}
+    </select>
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    SELECT id, product_id, name, value
+    FROM product_catalog_property_value
+    WHERE product_id = #{productId}
+  </select>
+</mapper>

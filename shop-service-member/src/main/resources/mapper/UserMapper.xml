@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.shop.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.User">
+    <id column="id" property="id" />
+    <result column="nick_name" property="nickName" />
+    <result column="account" property="account" />
+    <result column="password" property="password" />
+    <result column="phone" property="phone" />
+    <result column="email" property="email" />
+    <result column="sex" property="sex" />
+    <result column="birthday" property="birthday" />
+    <result column="user_money" property="userMoney" />
+    <result column="grade" property="grade" />
+    <result column="experience" property="experience" />
+    <result column="integral" property="integral" />
+    <result column="username" property="username" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from user
+    where id = #{id}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+    insert into user (nick_name, account, password, phone, email, sex, birthday, 
+      user_money, grade, experience, integral, username)
+    values (#{nickName}, #{account}, #{password}, #{phone}, #{email}, #{sex}, #{birthday}, 
+      #{userMoney}, #{grade}, #{experience}, #{integral}, #{username})
+  </insert>
+  <update id="updateByPrimaryKey">
+    update user
+    set nick_name = #{nickName},
+      account = #{account},
+      password = #{password},
+      phone = #{phone},
+      email = #{email},
+      sex = #{sex},
+      birthday = #{birthday},
+      user_money = #{userMoney},
+      grade = #{grade},
+      experience = #{experience},
+      integral = #{integral},
+      username = #{username}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, username, password, nick_name, phone, email, sex, birthday, user_money, 
+    grade, experience, integral
+    from `user`
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, password, nick_name, phone, email, sex, birthday, user_money, 
+    grade, experience, integral
+    from `user`
+  </select>
+    <select id="exists" resultMap="BaseResultMap">
+        select id, username, password, nick_name, phone, email, sex, birthday, user_money, 
+    grade, experience, integral
+    from `user` WHERE username=#{username}
+    </select>
+    <select id="login" resultMap="BaseResultMap">
+        select id, username, password, nick_name, phone, email, sex, birthday, user_money,
+        grade, experience, integral
+        from `user` 
+        WHERE username=#{username} and password=#{password}
+    </select>
+</mapper>

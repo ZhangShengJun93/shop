@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.shop.mapper.OrderReturnMapper" >
+  <cache type="cn.wolfcode.shop.cache.RedisCache"/>
+  <resultMap id="BaseResultMap" type="cn.wolfcode.shop.domain.OrderReturn" >
+    <id column="id" property="id" />
+    <result column="amount" property="amount" />
+    <result column="return_time" property="returnTime" />
+    <result column="username" property="username" />
+    <result column="state" property="state" />
+    <result column="note" property="note" />
+  </resultMap>
+  <insert id="insert"  useGeneratedKeys="true" keyProperty="id" >
+    insert into order_return (amount, return_time, username, state, note)
+    values (#{amount}, #{returnTime}, #{username}, #{state}, #{note})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.wolfcode.shop.domain.OrderReturn" >
+    update order_return
+    set amount = #{amount},
+      return_time = #{returnTime},
+      username = #{username},
+      state = #{state},
+      note = #{note}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, amount, return_time, username, state, note
+    from order_return
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, amount, return_time, username, state, note
+    from order_return
+  </select>
+    <select id="queryForCount" resultType="java.lang.Integer">
+        select count(id)
+      from order_return
+    </select>
+    <select id="queryForList" resultMap="BaseResultMap">
+        select id, amount, return_time, username, state, note
+    from order_return
+    limit #{startIndex},#{pageSize}
+    </select>
+</mapper>
